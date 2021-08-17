@@ -22,6 +22,17 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.fillSuperview()
         setupNav()
         
+        let weatherUrl = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=Houston&appid=3f63ffa4cdd77e0e1bde5ffcba9e32ae&units=imperial")!
+        let weatherResource = Resource<WeatherResponse>(url: weatherUrl) { data in
+            return try? JSONDecoder().decode(WeatherResponse.self, from: data)
+        }
+        
+        WebService().load(resource: weatherResource) { weatherResponse in
+            if let weatherResponse = weatherResponse {
+                print(weatherResponse)
+            }
+        }
+        
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
