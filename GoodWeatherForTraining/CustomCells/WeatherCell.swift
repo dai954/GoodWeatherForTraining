@@ -32,10 +32,10 @@ class WeatherCell: UITableViewCell {
         temperatureLavel.anchor(top: topAnchor, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 0, right: 10))
     }
     
-//    func configure(_ vm: WeatherViewModel) {
-//        self.cityNameLavel.text = vm.city
-//        self.temperatureLavel.text = "\(vm.temperature.formatAsDegree())"
-//    }
+    func configure(_ vm: WeatherViewModel) {
+        self.cityNameLavel.text = vm.city
+        self.temperatureLavel.text = "\(vm.temperature.formatAsDegree())"
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

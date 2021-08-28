@@ -7,9 +7,10 @@
 
 import UIKit
 
-class WeatherListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WeatherListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AddWeatherDelegate {
     private let cellId = "cellId"
     let tableView = UITableView()
+    private var weatherListViewModel = WeatherListViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,16 +36,25 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
         
     }
     
+    func addWeatherDidSave(vm: WeatherViewModel) {
+        weatherListViewModel.addWeatherViewModel(vm)
+        self.tableView.reloadData()
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return weatherListViewModel.numverOfRows(section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! WeatherCell
+        let weatherVM = weatherListViewModel.modelAt(indexPath.row)
+        
+        cell.configure(weatherVM)
+        
         return cell
     }
     
@@ -64,6 +74,7 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
     
     @objc func addTapped() {
         let addWeatherCityVC = AddWeatherCityViewController()
+        addWeatherCityVC.delegate = self
         let nav = UINavigationController(rootViewController: addWeatherCityVC)
         self.present(nav, animated: true, completion: nil)
     }
