@@ -11,6 +11,7 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
     private let cellId = "cellId"
     let tableView = UITableView()
     private var weatherListViewModel = WeatherListViewModel()
+    private var lastUnitSelection: Unit!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,15 +24,9 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
         tableView.fillSuperview()
         setupNav()
         
-        let weatherUrl = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=Houston&appid=3f63ffa4cdd77e0e1bde5ffcba9e32ae&units=imperial")!
-        let weatherResource = Resource<WeatherResponse>(url: weatherUrl) { data in
-            return try? JSONDecoder().decode(WeatherResponse.self, from: data)
-        }
-        
-        WebService().load(resource: weatherResource) { weatherResponse in
-            if let weatherResponse = weatherResponse {
-                print(weatherResponse)
-            }
+        let userDefaults = UserDefaults.standard
+        if let value = userDefaults.value(forKey: "unit") as? String {
+            self.lastUnitSelection = Unit(rawValue: value)!
         }
         
     }
@@ -81,7 +76,21 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
     
     @objc func settingTapped() {
         let settingVC = SettingViewController()
+        settingVC.delegate = self
         let nav = UINavigationController(rootViewController: settingVC)
         self.present(nav, animated: true, completion: nil)
     }
+}
+
+
+extension WeatherListViewController: settingDelegate {
+    func settingDone(vm: SettingViewModel) {
+        if lastUnitSelection.rawValue != vm.selectedUnit.rawValue {
+            weatherListViewModel.updateUnit(to: vm.selectedUnit)
+            tableView.reloadData()
+            lastUnitSelection = Unit(rawValue: vm.selectedUnit.rawValue)!
+        }
+    }
+    
+    
 }
