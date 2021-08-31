@@ -15,7 +15,7 @@ class WeatherListViewModel {
         weatherViewModels.append(vm)
     }
     
-    func numverOfRows(_ section: Int) -> Int {
+    func numberOfRows(_ section: Int) -> Int {
         return weatherViewModels.count
     }
     
