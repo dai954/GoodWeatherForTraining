@@ -16,8 +16,24 @@ class AddWeatherCityViewController: UIViewController {
     private var addWeatherVM = AddWeatherViewModel()
     var delegate: AddWeatherDelegate?
     
-    let cityNameField: UITextField = {
-        let textField = UITextField()
+    let cityNameField: BindingTextField = {
+        let textField = BindingTextField()
+        textField.backgroundColor = .white
+        textField.layer.borderWidth = 0.5
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        return textField
+    }()
+    
+    let stateNameField: BindingTextField = {
+        let textField = BindingTextField()
+        textField.backgroundColor = .white
+        textField.layer.borderWidth = 0.5
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        return textField
+    }()
+    
+    let zipCodeField: BindingTextField = {
+        let textField = BindingTextField()
         textField.backgroundColor = .white
         textField.layer.borderWidth = 0.5
         textField.layer.borderColor = UIColor.lightGray.cgColor
@@ -36,12 +52,20 @@ class AddWeatherCityViewController: UIViewController {
         view.backgroundColor = .white
         navigationItem.title = "Add City"
         
+        cityNameField.bind { self.addWeatherVM.city = $0 }
+        stateNameField.bind { self.addWeatherVM.state = $0 }
+        zipCodeField.bind { self.addWeatherVM.zipCode = $0 }
+        
         view.addSubview(cityNameField)
+        view.addSubview(stateNameField)
+        view.addSubview(zipCodeField)
         view.addSubview(cityButton)
         
         cityButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         cityNameField.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 30, left: 50, bottom: 0, right: 50))
-        cityButton.anchor(top: cityNameField.bottomAnchor, leading: cityNameField.leadingAnchor, bottom: nil, trailing: cityNameField.trailingAnchor)
+        stateNameField.anchor(top: cityNameField.bottomAnchor, leading: cityNameField.leadingAnchor, bottom: nil, trailing: cityNameField.trailingAnchor, padding: .init(top: 10, left: 0, bottom: 0, right: 0))
+        zipCodeField.anchor(top: stateNameField.bottomAnchor, leading: stateNameField.leadingAnchor, bottom: nil, trailing: stateNameField.trailingAnchor,padding: .init(top: 10, left: 0, bottom: 0, right: 0))
+        cityButton.anchor(top: zipCodeField.bottomAnchor, leading: zipCodeField.leadingAnchor, bottom: nil, trailing: zipCodeField.trailingAnchor,padding: .init(top: 10, left: 0, bottom: 0, right: 0))
         
         setup()
         
@@ -49,7 +73,7 @@ class AddWeatherCityViewController: UIViewController {
     
     
     @objc func buttonPressed() {
-        print("buttonPressed")
+        print(self.addWeatherVM)
         
         if let city = cityNameField.text {
             

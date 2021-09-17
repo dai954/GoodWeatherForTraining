@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol settingDelegate {
+protocol SettingDelegate {
     func settingDone(vm: SettingViewModel)
 }
 
@@ -17,7 +17,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
    
     private let tableView = UITableView()
     
-    var delegate: settingDelegate?
+    var delegate: SettingDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()

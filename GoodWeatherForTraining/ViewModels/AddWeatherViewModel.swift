@@ -9,6 +9,10 @@ import Foundation
 
 struct AddWeatherViewModel {
     
+    var city = ""
+    var state = ""
+    var zipCode = ""
+    
     func addWeather(for city: String, completion: @escaping (WeatherViewModel) -> Void) {
         
         let weatherURL = Constants.Urls.urlForWeatherByCity(city: city)
