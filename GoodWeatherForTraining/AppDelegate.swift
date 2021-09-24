@@ -25,7 +25,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
         }
         
+        defaultSetting()
         return true
+    }
+    
+    private func defaultSetting() {
+        
+        if UserDefaults.standard.string(forKey: "unit") == nil {
+            UserDefaults.standard.setValue(Unit.farenheit.rawValue, forKey: "unit")
+        }
+        
     }
 
     // MARK: UISceneSession Lifecycle

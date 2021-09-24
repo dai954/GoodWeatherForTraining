@@ -7,9 +7,13 @@
 
 import UIKit
 
-class WeatherListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WeatherListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AddWeatherDelegate {
     private let cellId = "cellId"
     let tableView = UITableView()
+    
+    let weatherListVM = WeatherListViewModel()
+    
+    var lastUnitSelection: Unit?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,21 +22,19 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
         
         tableView.register(WeatherCell.self, forCellReuseIdentifier: cellId)
         
+        if let settingUnit = UserDefaults.standard.string(forKey: "unit") {
+            lastUnitSelection = Unit(rawValue: settingUnit)
+        }
+        
         view.addSubview(tableView)
         tableView.fillSuperview()
         setupNav()
         
-        let weatherUrl = URL(string: "https://api.openweathermap.org/data/2.5/weather?q=Houston&appid=3f63ffa4cdd77e0e1bde5ffcba9e32ae&units=imperial")!
-        let weatherResource = Resource<WeatherResponse>(url: weatherUrl) { data in
-            return try? JSONDecoder().decode(WeatherResponse.self, from: data)
-        }
-        
-        WebService().load(resource: weatherResource) { weatherResponse in
-            if let weatherResponse = weatherResponse {
-                print(weatherResponse)
-            }
-        }
-        
+    }
+    
+    func addWeather(vm: WeatherViewModel) {
+        weatherListVM.addWeather(vm: vm)
+        self.tableView.reloadData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -40,11 +42,16 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return weatherListVM.weathers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! WeatherCell
+        let weatherVM = weatherListVM.weatherAt(index: indexPath.row)
+        
+        cell.cityNameLavel.text = weatherVM.name
+        cell.temperatureLavel.text = weatherVM.temperature.formatAsDegree()
+        
         return cell
     }
     
@@ -64,13 +71,26 @@ class WeatherListViewController: UIViewController, UITableViewDelegate, UITableV
     
     @objc func addTapped() {
         let addWeatherCityVC = AddWeatherCityViewController()
+        addWeatherCityVC.delegate = self
         let nav = UINavigationController(rootViewController: addWeatherCityVC)
         self.present(nav, animated: true, completion: nil)
     }
     
     @objc func settingTapped() {
         let settingVC = SettingViewController()
+        settingVC.delegate = self
         let nav = UINavigationController(rootViewController: settingVC)
         self.present(nav, animated: true, completion: nil)
+    }
+}
+
+extension WeatherListViewController: SettingDoneDelegate {
+    func settingDone(vm: SettingViewModel) {
+        
+        if vm.selectedUnit != lastUnitSelection {
+            weatherListVM.changeTemp(unit: vm.selectedUnit)
+            tableView.reloadData()
+            lastUnitSelection = vm.selectedUnit
+        }
     }
 }
